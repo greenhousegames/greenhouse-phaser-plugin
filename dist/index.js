@@ -20,17 +20,46 @@ module.exports = function (_Phaser$Plugin) {
   function GreenhousePlugin(game, parent) {
     _classCallCheck(this, GreenhousePlugin);
 
-    return _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
+    var _this = _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
+
+    _this.layout = {
+      size: ''
+    };
+    return _this;
   }
 
   _createClass(GreenhousePlugin, [{
-    key: 'configure',
-    value: function configure(config) {
+    key: 'initialize',
+    value: function initialize(config) {
       this.name = config.name;
       this.storage = new _firebaseGameStorage2.default(config.name, config.firebase);
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
+
+      this.enableResponsive = !!config.responsive;
+      if (this.enableResponsive) {
+        this.game.scale.setResizeCallback(this.resizeDevice, this);
+        this.resizeDevice();
+      }
+    }
+  }, {
+    key: 'updateSettings',
+    value: function updateSettings(width /*, height */) {
+      // responsive sizes
+      if (width >= 1200) {
+        this.layout.size = 'large';
+      } else if (width >= 640) {
+        this.layout.size = 'medium';
+      } else {
+        this.layout.size = 'small';
+      }
+    }
+  }, {
+    key: 'resizeDevice',
+    value: function resizeDevice() {
+      this.updateSettings(window.innerWidth, window.innerHeight);
+      this.game.scale.setGameSize(window.innerWidth, window.innerHeight);
     }
   }, {
     key: 'loadAtlas',
