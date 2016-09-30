@@ -5,4 +5,4 @@ class GreenhousePlugin extends Phaser.Plugin {
   }
 }
 
-Phaser.Plugin.Greenhouse = GreenhousePlugin;
+export default GreenhousePlugin;
