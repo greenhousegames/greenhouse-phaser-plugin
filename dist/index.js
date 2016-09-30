@@ -20,8 +20,21 @@ module.exports = function (_Phaser$Plugin) {
   _createClass(GreenhousePlugin, [{
     key: 'configure',
     value: function configure(config) {
-      this.gameid = config.id;
-      this.firebase = config.firebase.child('games').child(this.gameid);
+      this.name = config.name;
+      this.firebase = config.firebase;
+
+      var assetPath = config.assetPath || '/';
+      this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
+
+      this.adUrl = config.adUrl || '';
+    }
+  }, {
+    key: 'initalize',
+    value: function initalize() {
+      // enable ads plugin
+      this.game.add.plugin(Fabrique.Plugins.AdManager);
+      var provider = new Fabrique.AdProvider.Ima3(this.game, this.adUrl);
+      this.game.ads.setAdProvider(provider);
     }
   }]);
 
