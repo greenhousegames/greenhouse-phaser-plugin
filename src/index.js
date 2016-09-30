@@ -1,4 +1,4 @@
-import rsvp from 'rsvp';
+import GameStorage from '@greenhousegames/firebase-game-storage';
 
 module.exports = class GreenhousePlugin extends Phaser.Plugin {
   constructor(game, parent) {
@@ -7,7 +7,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
   configure(config) {
     this.name = config.name;
-    this._firebase = config.firebase;
+    this.storage = new GameStorage(config.name, config.firebase);
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
@@ -15,25 +15,5 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
   loadAtlas() {
     this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
-  }
-
-  waitForAuth() {
-    const auth = this._firebase.auth();
-    const promise = new rsvp.Promise((resolve) => {
-      const callback = () => {
-        off();
-        resolve();
-      };
-      const off = auth.onAuthStateChanged(callback);
-    });
-    return promise;
-  }
-
-  firebaseRef(path) {
-    return this._firebase.database().ref('games').child(this.name);
-  }
-
-  firebaseAuth() {
-    return this._firebase.auth();
   }
 }
