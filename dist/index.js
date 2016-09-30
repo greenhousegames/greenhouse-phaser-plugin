@@ -40,7 +40,7 @@ module.exports = function (_Phaser$Plugin) {
   }, {
     key: 'waitForAuth',
     value: function waitForAuth() {
-      var auth = this.firebase.auth();
+      var auth = this._firebase.auth();
       var promise = new _rsvp2.default.Promise(function (resolve) {
         var callback = function callback() {
           off();
