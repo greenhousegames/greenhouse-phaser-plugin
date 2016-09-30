@@ -18,7 +18,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   }
 
   waitForAuth() {
-    const auth = this.firebase.auth();
+    const auth = this._firebase.auth();
     const promise = new rsvp.Promise((resolve) => {
       const callback = () => {
         off();
