@@ -25,16 +25,6 @@ module.exports = function (_Phaser$Plugin) {
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
-
-      this.adUrl = config.adUrl || '';
-    }
-  }, {
-    key: 'initalize',
-    value: function initalize() {
-      // enable ads plugin
-      this.game.add.plugin(Fabrique.Plugins.AdManager);
-      var provider = new Fabrique.AdProvider.Ima3(this.game, this.adUrl);
-      this.game.ads.setAdProvider(provider);
     }
   }, {
     key: 'loadAtlas',
