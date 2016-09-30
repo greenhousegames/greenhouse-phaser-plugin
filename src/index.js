@@ -19,4 +19,8 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     const provider = new Fabrique.AdProvider.Ima3(this.game, this.adUrl);
     this.game.ads.setAdProvider(provider);
   }
+
+  loadAtlas() {
+    this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
+  }
 }
