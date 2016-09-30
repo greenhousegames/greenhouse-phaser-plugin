@@ -16,4 +16,4 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   loadAtlas() {
     this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
   }
-}
+};
