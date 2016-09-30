@@ -36,6 +36,11 @@ module.exports = function (_Phaser$Plugin) {
       var provider = new Fabrique.AdProvider.Ima3(this.game, this.adUrl);
       this.game.ads.setAdProvider(provider);
     }
+  }, {
+    key: 'loadAtlas',
+    value: function loadAtlas() {
+      this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
+    }
   }]);
 
   return GreenhousePlugin;
