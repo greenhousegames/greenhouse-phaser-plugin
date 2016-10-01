@@ -15,8 +15,15 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
 
-    this.enableResponsive = !!config.responsive;
-    if (this.enableResponsive) {
+    if (config.responsive) {
+      this.responsive = {
+        register: (callback, context) => {
+          this.game.scale.onSizeChange.add(callback, context);
+        },
+        unregister: (callback, context) => {
+          this.game.scale.onSizeChange.remove(callback, context);
+        }
+      };
       this.game.scale.setResizeCallback(this.resizeDevice, this);
       this.resizeDevice();
     }
