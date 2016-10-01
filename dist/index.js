@@ -31,14 +31,23 @@ module.exports = function (_Phaser$Plugin) {
   _createClass(GreenhousePlugin, [{
     key: 'initialize',
     value: function initialize(config) {
+      var _this2 = this;
+
       this.name = config.name;
       this.storage = new _firebaseGameStorage2.default(config.name, config.firebase);
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
 
-      this.enableResponsive = !!config.responsive;
-      if (this.enableResponsive) {
+      if (config.responsive) {
+        this.responsive = {
+          register: function register(callback, context) {
+            _this2.game.scale.onSizeChange.add(callback, context);
+          },
+          unregister: function unregister(callback, context) {
+            _this2.game.scale.onSizeChange.remove(callback, context);
+          }
+        };
         this.game.scale.setResizeCallback(this.resizeDevice, this);
         this.resizeDevice();
       }
