@@ -3,9 +3,6 @@ import GameStorage from '@greenhousegames/firebase-game-storage';
 module.exports = class GreenhousePlugin extends Phaser.Plugin {
   constructor(game, parent) {
     super(game, parent);
-    this.layout = {
-      size: ''
-    };
   }
 
   initialize(config) {
@@ -22,7 +19,8 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
         },
         unregister: (callback, context) => {
           this.game.scale.onSizeChange.remove(callback, context);
-        }
+        },
+        size: ''
       };
       this.game.scale.setResizeCallback(this.resizeDevice, this);
       this.resizeDevice();
@@ -32,11 +30,11 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   updateSettings(width/*, height */) {
     // responsive sizes
     if (width >= 1200) {
-      this.layout.size = 'large';
+      this.responsive.size = 'large';
     } else if (width >= 640) {
-      this.layout.size = 'medium';
+      this.responsive.size = 'medium';
     } else {
-      this.layout.size = 'small';
+      this.responsive.size = 'small';
     }
   }
 
