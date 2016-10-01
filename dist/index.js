@@ -20,12 +20,7 @@ module.exports = function (_Phaser$Plugin) {
   function GreenhousePlugin(game, parent) {
     _classCallCheck(this, GreenhousePlugin);
 
-    var _this = _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
-
-    _this.layout = {
-      size: ''
-    };
-    return _this;
+    return _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
   }
 
   _createClass(GreenhousePlugin, [{
@@ -46,7 +41,8 @@ module.exports = function (_Phaser$Plugin) {
           },
           unregister: function unregister(callback, context) {
             _this2.game.scale.onSizeChange.remove(callback, context);
-          }
+          },
+          size: ''
         };
         this.game.scale.setResizeCallback(this.resizeDevice, this);
         this.resizeDevice();
@@ -57,11 +53,11 @@ module.exports = function (_Phaser$Plugin) {
     value: function updateSettings(width /*, height */) {
       // responsive sizes
       if (width >= 1200) {
-        this.layout.size = 'large';
+        this.responsive.size = 'large';
       } else if (width >= 640) {
-        this.layout.size = 'medium';
+        this.responsive.size = 'medium';
       } else {
-        this.layout.size = 'small';
+        this.responsive.size = 'small';
       }
     }
   }, {
