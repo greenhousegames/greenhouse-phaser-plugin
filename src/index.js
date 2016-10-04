@@ -7,7 +7,11 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
   initialize(config) {
     this.name = config.name;
-    this.storage = new GameStorage(config.name, config.firebase);
+    this.storage = new GameStorage({
+      name: config.name,
+      firebase: config.firebase,
+      metrics: config.metrics
+    });
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
