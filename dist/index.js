@@ -29,7 +29,11 @@ module.exports = function (_Phaser$Plugin) {
       var _this2 = this;
 
       this.name = config.name;
-      this.storage = new _firebaseGameStorage2.default(config.name, config.firebase);
+      this.storage = new _firebaseGameStorage2.default({
+        name: config.name,
+        firebase: config.firebase,
+        metrics: config.metrics
+      });
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
