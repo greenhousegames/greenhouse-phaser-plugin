@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import rsvp from 'rsvp';
 import FirebaseReporting from 'firebase-reporting';
 import Auth from './auth';
 
