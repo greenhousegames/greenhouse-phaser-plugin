@@ -8,6 +8,10 @@ var _firebase = require('firebase');
 
 var _firebase2 = _interopRequireDefault(_firebase);
 
+var _rsvp = require('rsvp');
+
+var _rsvp2 = _interopRequireDefault(_rsvp);
+
 var _firebaseReporting = require('firebase-reporting');
 
 var _firebaseReporting2 = _interopRequireDefault(_firebaseReporting);
@@ -155,12 +159,12 @@ module.exports = function (_Phaser$Plugin) {
         gamedata[key] = data[key];
       });
 
-      var promise = new rsvp.Promise(function (resolve, reject) {
+      var promise = new _rsvp2.default.Promise(function (resolve, reject) {
         var promises = [];
         promises.push(_this4.reporting.refData().push().set(gamedata));
         promises.push(_this4.reporting.saveMetrics(gamedata));
 
-        rsvp.all(promises).then(resolve).catch(reject);
+        _rsvp2.default.all(promises).then(resolve).catch(reject);
       });
       return promise;
     }
