@@ -1,6 +1,6 @@
 import firebase from 'firebase';
+import FirebaseReporting from 'firebase-reporting';
 import Auth from './auth';
-import FirebaseReporting from './firebase-reporting';
 
 module.exports = class GreenhousePlugin extends Phaser.Plugin {
   constructor(game, parent) {
