@@ -2,9 +2,17 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _firebaseGameStorage = require('@greenhousegames/firebase-game-storage');
+var _firebase = require('firebase');
 
-var _firebaseGameStorage2 = _interopRequireDefault(_firebaseGameStorage);
+var _firebase2 = _interopRequireDefault(_firebase);
+
+var _auth = require('./auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
+var _firebaseReporting = require('./firebase-reporting');
+
+var _firebaseReporting2 = _interopRequireDefault(_firebaseReporting);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29,10 +37,18 @@ module.exports = function (_Phaser$Plugin) {
       var _this2 = this;
 
       this.name = config.name;
-      this.storage = new _firebaseGameStorage2.default({
-        name: config.name,
+      this.mode = '';
+      this.auth = new _auth2.default(config.firebase);
+
+      var metricConfig = JSON.parse(JSON.stringify(config.metrics));
+      metricConfig.endedAt = ['first', 'last'];
+      metricConfig.played = ['sum'];
+      this.reporting = new _firebaseReporting2.default({
         firebase: config.firebase,
-        metrics: config.metrics
+        dataPath: 'games',
+        reportingPath: 'reporting',
+        filters: ['name', 'mode'],
+        metrics: metricConfig
       });
 
       var assetPath = config.assetPath || '/';
@@ -51,6 +67,17 @@ module.exports = function (_Phaser$Plugin) {
         this.game.scale.setResizeCallback(this.resizeDevice, this);
         this.resizeDevice();
       }
+
+      this.setMode('standard');
+    }
+  }, {
+    key: 'setMode',
+    value: function setMode(mode) {
+      this.mode = mode;
+      this.reporting.setQueryFilter(['name', 'mode'], {
+        name: this.name,
+        mode: this.mode
+      });
     }
   }, {
     key: 'updateSettings',
@@ -74,6 +101,54 @@ module.exports = function (_Phaser$Plugin) {
     key: 'loadAtlas',
     value: function loadAtlas() {
       this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
+    }
+  }, {
+    key: 'onGamePlayed',
+    value: function onGamePlayed(cb) {
+      var _this3 = this;
+
+      var query = this.reporting.refData().orderByChild('endedAt');
+
+      query.limitToLast(1).once('value', function (snapshot) {
+        var games = snapshot.val();
+        var keys = Object.keys(games);
+
+        if (keys.length > 0) {
+          query = query.startAt(games[keys[0]].endedAt + 1);
+        }
+
+        // setup listener
+        query.on('child_added', function (snap) {
+          return cb(snap.val());
+        });
+        _this3._queries.push(query);
+      });
+    }
+  }, {
+    key: 'saveGamePlayed',
+    value: function saveGamePlayed(data) {
+      var _this4 = this;
+
+      var origKeys = Object.keys(data);
+      var gamedata = {
+        endedAt: _firebase2.default.database.ServerValue.TIMESTAMP,
+        uid: this.auth.currentUserUID(),
+        mode: this.mode,
+        name: this.name,
+        played: 1
+      };
+      origKeys.forEach(function (key) {
+        gamedata[key] = data[key];
+      });
+
+      var promise = new rsvp.Promise(function (resolve, reject) {
+        var promises = [];
+        promises.push(_this4.reporting.refData().push().set(gamedata));
+        promises.push(_this4.reporting.saveMetrics(gamedata));
+
+        rsvp.all(promises).then(resolve).catch(reject);
+      });
+      return promise;
     }
   }]);
 
