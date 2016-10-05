@@ -19,7 +19,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
       firebase: config.firebase,
       dataPath: 'games',
       reportingPath: 'reporting',
-      filters: ['name', 'mode'],
+      filters: [['name', 'mode']],
       metrics: metricConfig
     });
 
