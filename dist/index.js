@@ -6,13 +6,13 @@ var _firebase = require('firebase');
 
 var _firebase2 = _interopRequireDefault(_firebase);
 
+var _firebaseReporting = require('firebase-reporting');
+
+var _firebaseReporting2 = _interopRequireDefault(_firebaseReporting);
+
 var _auth = require('./auth');
 
 var _auth2 = _interopRequireDefault(_auth);
-
-var _firebaseReporting = require('./firebase-reporting');
-
-var _firebaseReporting2 = _interopRequireDefault(_firebaseReporting);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
