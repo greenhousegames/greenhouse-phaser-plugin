@@ -2,6 +2,8 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _firebase = require('firebase');
 
 var _firebase2 = _interopRequireDefault(_firebase);
@@ -28,7 +30,10 @@ module.exports = function (_Phaser$Plugin) {
   function GreenhousePlugin(game, parent) {
     _classCallCheck(this, GreenhousePlugin);
 
-    return _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
+    var _this = _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
+
+    _this.gamePlayedListener = null;
+    return _this;
   }
 
   _createClass(GreenhousePlugin, [{
@@ -45,7 +50,7 @@ module.exports = function (_Phaser$Plugin) {
       metricConfig.played = ['sum'];
       this.reporting = new _firebaseReporting2.default({
         firebase: config.firebase,
-        dataPath: 'games',
+        dataPath: 'played',
         reportingPath: 'reporting',
         filters: [['name', 'mode']],
         metrics: metricConfig
@@ -107,13 +112,14 @@ module.exports = function (_Phaser$Plugin) {
     value: function onGamePlayed(cb) {
       var _this3 = this;
 
+      this.offGamePlayed();
       var query = this.reporting.refData().orderByChild('endedAt');
 
       query.limitToLast(1).once('value', function (snapshot) {
         var games = snapshot.val();
-        var keys = Object.keys(games);
+        var keys = games ? Object.keys(games) : null;
 
-        if (keys.length > 0) {
+        if (keys && keys.length > 0) {
           query = query.startAt(games[keys[0]].endedAt + 1);
         }
 
@@ -121,8 +127,16 @@ module.exports = function (_Phaser$Plugin) {
         query.on('child_added', function (snap) {
           return cb(snap.val());
         });
-        _this3._queries.push(query);
+        _this3.gamePlayedListener = query;
       });
+    }
+  }, {
+    key: 'offGamePlayed',
+    value: function offGamePlayed() {
+      if (this.gamePlayedListener) {
+        this.gamePlayedListener.off('child_added');
+      }
+      this.gamePlayedListener = null;
     }
   }, {
     key: 'saveGamePlayed',
@@ -149,6 +163,13 @@ module.exports = function (_Phaser$Plugin) {
         rsvp.all(promises).then(resolve).catch(reject);
       });
       return promise;
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      this.offGamePlayed();
+
+      _get(GreenhousePlugin.prototype.__proto__ || Object.getPrototypeOf(GreenhousePlugin.prototype), 'destroy', this).call(this);
     }
   }]);
 
