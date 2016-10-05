@@ -5,6 +5,8 @@ import Auth from './auth';
 module.exports = class GreenhousePlugin extends Phaser.Plugin {
   constructor(game, parent) {
     super(game, parent);
+
+    this.gamePlayedListener = null;
   }
 
   initialize(config) {
@@ -17,7 +19,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     metricConfig.played = ['sum'];
     this.reporting = new FirebaseReporting({
       firebase: config.firebase,
-      dataPath: 'games',
+      dataPath: 'played',
       reportingPath: 'reporting',
       filters: [['name', 'mode']],
       metrics: metricConfig
@@ -72,20 +74,28 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   }
 
   onGamePlayed(cb) {
+    this.offGamePlayed();
     let query = this.reporting.refData().orderByChild('endedAt');
 
     query.limitToLast(1).once('value', (snapshot) => {
       const games = snapshot.val();
-      const keys = Object.keys(games);
+      const keys = games ? Object.keys(games) : null;
 
-      if (keys.length > 0) {
+      if (keys && keys.length > 0) {
         query = query.startAt(games[keys[0]].endedAt + 1);
       }
 
       // setup listener
       query.on('child_added', (snap) => cb(snap.val()));
-      this._queries.push(query);
+      this.gamePlayedListener = query;
     });
+  }
+
+  offGamePlayed() {
+    if (this.gamePlayedListener) {
+      this.gamePlayedListener.off('child_added');
+    }
+    this.gamePlayedListener = null;
   }
 
   saveGamePlayed(data) {
@@ -109,5 +119,11 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
       rsvp.all(promises).then(resolve).catch(reject);
     });
     return promise;
+  }
+
+  destroy() {
+    this.offGamePlayed();
+
+    super.destroy();
   }
 };
