@@ -19,12 +19,6 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     this.reporting = new FirebaseReporting({
       firebase: config.firebase.database().ref('reporting')
     });
-    this.reporting.addFilter('users', ['uid']);
-    this.reporting.addFilter('games', ['name']);
-    this.reporting.addFilter('gamemodes', ['name', 'mode']);
-
-    this.reporting.addMetric('endedAt', ['first', 'last']);
-    this.reporting.addMetric('played', ['sum']);
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
