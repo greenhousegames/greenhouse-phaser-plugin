@@ -51,7 +51,7 @@ module.exports = function (_Phaser$Plugin) {
       this.auth = new _auth2.default(config.firebase);
 
       this.reporting = new _firebaseReporting2.default({
-        firebase: config.firebase.database().ref('reporting')
+        firebase: config.firebase.database().ref('reporting').child(this.name)
       });
 
       var assetPath = config.assetPath || '/';
