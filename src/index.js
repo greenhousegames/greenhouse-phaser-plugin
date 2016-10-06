@@ -13,18 +13,18 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   initialize(config) {
     this.name = config.name;
     this.mode = '';
+    this.firebase = config.firebase;
     this.auth = new Auth(config.firebase);
 
-    const metricConfig = JSON.parse(JSON.stringify(config.metrics));
-    metricConfig.endedAt = ['first', 'last'];
-    metricConfig.played = ['sum'];
     this.reporting = new FirebaseReporting({
-      firebase: config.firebase,
-      dataPath: 'played',
-      reportingPath: 'reporting',
-      filters: [['name', 'mode']],
-      metrics: metricConfig
+      firebase: config.firebase.database().ref('reporting')
     });
+    this.reporting.addFilter('users', ['uid']);
+    this.reporting.addFilter('games', ['name']);
+    this.reporting.addFilter('gamemodes', ['name', 'mode']);
+
+    this.reporting.addMetric('endedAt', ['first', 'last']);
+    this.reporting.addMetric('played', ['sum']);
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
@@ -48,10 +48,6 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
   setMode(mode) {
     this.mode = mode;
-    this.reporting.setQueryFilter(['name', 'mode'], {
-      name: this.name,
-      mode: this.mode
-    });
   }
 
   updateSettings(width/*, height */) {
@@ -76,7 +72,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
   onGamePlayed(cb) {
     this.offGamePlayed();
-    let query = this.reporting.refData().orderByChild('endedAt');
+    let query = this.refData().orderByChild('endedAt');
 
     query.limitToLast(1).once('value', (snapshot) => {
       const games = snapshot.val();
@@ -114,12 +110,16 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
 
     const promise = new rsvp.Promise((resolve, reject) => {
       const promises = [];
-      promises.push(this.reporting.refData().push().set(gamedata));
+      promises.push(this.refData().push().set(gamedata));
       promises.push(this.reporting.saveMetrics(gamedata));
 
       rsvp.all(promises).then(resolve).catch(reject);
     });
     return promise;
+  }
+
+  refData() {
+    return this.firebase.database().ref('data');
   }
 
   destroy() {
