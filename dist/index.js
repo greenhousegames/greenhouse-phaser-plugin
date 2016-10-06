@@ -53,12 +53,6 @@ module.exports = function (_Phaser$Plugin) {
       this.reporting = new _firebaseReporting2.default({
         firebase: config.firebase.database().ref('reporting')
       });
-      this.reporting.addFilter('users', ['uid']);
-      this.reporting.addFilter('games', ['name']);
-      this.reporting.addFilter('gamemodes', ['name', 'mode']);
-
-      this.reporting.addMetric('endedAt', ['first', 'last']);
-      this.reporting.addMetric('played', ['sum']);
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
