@@ -47,18 +47,18 @@ module.exports = function (_Phaser$Plugin) {
 
       this.name = config.name;
       this.mode = '';
+      this.firebase = config.firebase;
       this.auth = new _auth2.default(config.firebase);
 
-      var metricConfig = JSON.parse(JSON.stringify(config.metrics));
-      metricConfig.endedAt = ['first', 'last'];
-      metricConfig.played = ['sum'];
       this.reporting = new _firebaseReporting2.default({
-        firebase: config.firebase,
-        dataPath: 'played',
-        reportingPath: 'reporting',
-        filters: [['name', 'mode']],
-        metrics: metricConfig
+        firebase: config.firebase.database().ref('reporting')
       });
+      this.reporting.addFilter('users', ['uid']);
+      this.reporting.addFilter('games', ['name']);
+      this.reporting.addFilter('gamemodes', ['name', 'mode']);
+
+      this.reporting.addMetric('endedAt', ['first', 'last']);
+      this.reporting.addMetric('played', ['sum']);
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
@@ -83,10 +83,6 @@ module.exports = function (_Phaser$Plugin) {
     key: 'setMode',
     value: function setMode(mode) {
       this.mode = mode;
-      this.reporting.setQueryFilter(['name', 'mode'], {
-        name: this.name,
-        mode: this.mode
-      });
     }
   }, {
     key: 'updateSettings',
@@ -117,7 +113,7 @@ module.exports = function (_Phaser$Plugin) {
       var _this3 = this;
 
       this.offGamePlayed();
-      var query = this.reporting.refData().orderByChild('endedAt');
+      var query = this.refData().orderByChild('endedAt');
 
       query.limitToLast(1).once('value', function (snapshot) {
         var games = snapshot.val();
@@ -161,12 +157,17 @@ module.exports = function (_Phaser$Plugin) {
 
       var promise = new _rsvp2.default.Promise(function (resolve, reject) {
         var promises = [];
-        promises.push(_this4.reporting.refData().push().set(gamedata));
+        promises.push(_this4.refData().push().set(gamedata));
         promises.push(_this4.reporting.saveMetrics(gamedata));
 
         _rsvp2.default.all(promises).then(resolve).catch(reject);
       });
       return promise;
+    }
+  }, {
+    key: 'refData',
+    value: function refData() {
+      return this.firebase.database().ref('data');
     }
   }, {
     key: 'destroy',
