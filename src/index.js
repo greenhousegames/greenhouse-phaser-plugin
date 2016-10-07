@@ -15,8 +15,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     this.mode = '';
     this.firebase = config.firebase;
     this.auth = new Auth(config.firebase);
-
-    this.reporting = new FirebaseReporting({
+    this.reporting = config.reporting || new FirebaseReporting({
       firebase: config.firebase.database().ref('reporting').child(this.name)
     });
 
