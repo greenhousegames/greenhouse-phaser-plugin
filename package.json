@@ -1,6 +1,6 @@
 {
   "name": "@greenhousegames/greenhouse-phaser-plugin",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
