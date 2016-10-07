@@ -12,10 +12,6 @@ var _rsvp = require('rsvp');
 
 var _rsvp2 = _interopRequireDefault(_rsvp);
 
-var _firebaseReporting = require('firebase-reporting');
-
-var _firebaseReporting2 = _interopRequireDefault(_firebaseReporting);
-
 var _auth = require('./auth');
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -49,9 +45,6 @@ module.exports = function (_Phaser$Plugin) {
       this.mode = '';
       this.firebase = config.firebase;
       this.auth = new _auth2.default(config.firebase);
-      this.reporting = config.reporting || new _firebaseReporting2.default({
-        firebase: config.firebase.database().ref('reporting').child(this.name)
-      });
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
