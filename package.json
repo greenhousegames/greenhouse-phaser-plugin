@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/greenhousegames/greenhouse-phaser-plugin#readme",
   "dependencies": {
-    "firebase-reporting": "~0.0.1",
     "rsvp": "^3.2.1"
   },
   "devDependencies": {

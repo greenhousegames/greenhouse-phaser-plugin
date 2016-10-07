@@ -1,6 +1,5 @@
 import firebase from 'firebase';
 import rsvp from 'rsvp';
-import FirebaseReporting from 'firebase-reporting';
 import Auth from './auth';
 
 module.exports = class GreenhousePlugin extends Phaser.Plugin {
@@ -15,9 +14,6 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     this.mode = '';
     this.firebase = config.firebase;
     this.auth = new Auth(config.firebase);
-    this.reporting = config.reporting || new FirebaseReporting({
-      firebase: config.firebase.database().ref('reporting').child(this.name)
-    });
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
