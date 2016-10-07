@@ -49,8 +49,7 @@ module.exports = function (_Phaser$Plugin) {
       this.mode = '';
       this.firebase = config.firebase;
       this.auth = new _auth2.default(config.firebase);
-
-      this.reporting = new _firebaseReporting2.default({
+      this.reporting = config.reporting || new _firebaseReporting2.default({
         firebase: config.firebase.database().ref('reporting').child(this.name)
       });
 
