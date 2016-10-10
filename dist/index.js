@@ -2,16 +2,6 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _firebase = require('firebase');
-
-var _firebase2 = _interopRequireDefault(_firebase);
-
-var _rsvp = require('rsvp');
-
-var _rsvp2 = _interopRequireDefault(_rsvp);
-
 var _auth = require('./auth');
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -30,10 +20,7 @@ module.exports = function (_Phaser$Plugin) {
   function GreenhousePlugin(game, parent) {
     _classCallCheck(this, GreenhousePlugin);
 
-    var _this = _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
-
-    _this.gamePlayedListener = null;
-    return _this;
+    return _possibleConstructorReturn(this, (GreenhousePlugin.__proto__ || Object.getPrototypeOf(GreenhousePlugin)).call(this, game, parent));
   }
 
   _createClass(GreenhousePlugin, [{
@@ -94,73 +81,14 @@ module.exports = function (_Phaser$Plugin) {
       this.game.load.atlas(this.name, this.assetPath + this.name + '.png', this.assetPath + this.name + '.json');
     }
   }, {
-    key: 'onGamePlayed',
-    value: function onGamePlayed(cb) {
-      var _this3 = this;
-
-      this.offGamePlayed();
-      var query = this.refData().orderByChild('endedAt');
-
-      query.limitToLast(1).once('value', function (snapshot) {
-        var games = snapshot.val();
-        var keys = games ? Object.keys(games) : null;
-
-        if (keys && keys.length > 0) {
-          query = query.startAt(games[keys[0]].endedAt + 1);
-        }
-
-        // setup listener
-        query.on('child_added', function (snap) {
-          return cb(snap.val());
-        });
-        _this3.gamePlayedListener = query;
-      });
-    }
-  }, {
-    key: 'offGamePlayed',
-    value: function offGamePlayed() {
-      if (this.gamePlayedListener) {
-        this.gamePlayedListener.off('child_added');
-      }
-      this.gamePlayedListener = null;
-    }
-  }, {
-    key: 'saveGamePlayed',
-    value: function saveGamePlayed(data) {
-      var _this4 = this;
-
-      var origKeys = Object.keys(data);
-      var gamedata = {
-        endedAt: _firebase2.default.database.ServerValue.TIMESTAMP,
-        uid: this.auth.currentUserUID(),
-        mode: this.mode,
-        name: this.name,
-        played: 1
-      };
-      origKeys.forEach(function (key) {
-        gamedata[key] = data[key];
-      });
-
-      var promise = new _rsvp2.default.Promise(function (resolve, reject) {
-        var promises = [];
-        promises.push(_this4.refData().push().set(gamedata));
-        promises.push(_this4.reporting.saveMetrics(gamedata));
-
-        _rsvp2.default.all(promises).then(resolve).catch(reject);
-      });
-      return promise;
-    }
-  }, {
     key: 'refData',
     value: function refData() {
-      return this.firebase.database().ref('data');
+      return this.firebase.database().ref('games').child(this.name).child('data');
     }
   }, {
-    key: 'destroy',
-    value: function destroy() {
-      this.offGamePlayed();
-
-      _get(GreenhousePlugin.prototype.__proto__ || Object.getPrototypeOf(GreenhousePlugin.prototype), 'destroy', this).call(this);
+    key: 'refReporting',
+    value: function refReporting() {
+      return this.firebase.database().ref('games').child(this.name).child('reporting');
     }
   }]);
 
