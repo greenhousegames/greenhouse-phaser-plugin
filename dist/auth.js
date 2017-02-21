@@ -2,12 +2,6 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _rsvp = require('rsvp');
-
-var _rsvp2 = _interopRequireDefault(_rsvp);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Auth = function () {
@@ -36,7 +30,7 @@ var Auth = function () {
     key: 'waitForAuth',
     value: function waitForAuth() {
       var auth = this.firebaseAuth();
-      var promise = new _rsvp2.default.Promise(function (resolve) {
+      var promise = new Promise(function (resolve) {
         var callback = function callback() {
           off();
           resolve();
@@ -50,7 +44,7 @@ var Auth = function () {
     value: function requireAuth() {
       var _this = this;
 
-      var promise = new _rsvp2.default.Promise(function (resolve, reject) {
+      var promise = new Promise(function (resolve, reject) {
         _this.waitForAuth().then(function () {
           if (!_this.firebaseAuth().currentUser) {
             _this.firebaseAuth().signInAnonymously().then(resolve).catch(reject);
@@ -60,6 +54,13 @@ var Auth = function () {
         }).catch(reject);
       });
       return promise;
+    }
+  }, {
+    key: 'onAuthChanged',
+    value: function onAuthChanged(cb) {
+      this.firebaseAuth().onAuthStateChanged(function (auth) {
+        cb(auth);
+      });
     }
   }]);
 
