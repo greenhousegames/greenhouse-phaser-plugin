@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/greenhousegames/greenhouse-phaser-plugin#readme",
   "dependencies": {
-    "rsvp": "^3.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
