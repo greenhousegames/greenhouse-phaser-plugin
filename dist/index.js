@@ -32,6 +32,7 @@ module.exports = function (_Phaser$Plugin) {
       this.mode = '';
       this.firebase = config.firebase;
       this.auth = new _auth2.default(config.firebase);
+      this.elementId = config.elemId;
 
       var assetPath = config.assetPath || '/';
       this.assetPath = assetPath.lastIndexOf('/') === assetPath.length - 1 ? assetPath : assetPath + '/';
@@ -72,8 +73,9 @@ module.exports = function (_Phaser$Plugin) {
   }, {
     key: 'resizeDevice',
     value: function resizeDevice() {
-      this.updateSettings(window.innerWidth, window.innerHeight);
-      this.game.scale.setGameSize(window.innerWidth, window.innerHeight);
+      var parent = document.getElementById(this.elementId).parentElement;
+      this.updateSettings(parent.clientWidth, parent.clientHeight);
+      this.game.scale.setGameSize(parent.clientWidth, parent.clientHeight);
     }
   }, {
     key: 'loadAtlas',
