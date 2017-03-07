@@ -10,6 +10,7 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
     this.mode = '';
     this.firebase = config.firebase;
     this.auth = new Auth(config.firebase);
+    this.elementId = config.elemId;
 
     const assetPath = config.assetPath || '/';
     this.assetPath = assetPath.lastIndexOf('/') === assetPath.length-1 ? assetPath : assetPath + '/';
@@ -47,8 +48,9 @@ module.exports = class GreenhousePlugin extends Phaser.Plugin {
   }
 
   resizeDevice() {
-    this.updateSettings(window.innerWidth, window.innerHeight);
-    this.game.scale.setGameSize(window.innerWidth, window.innerHeight);
+    const parent = document.getElementById(this.elementId).parentElement;
+    this.updateSettings(parent.clientWidth, parent.clientHeight);
+    this.game.scale.setGameSize(parent.clientWidth, parent.clientHeight);
   }
 
   loadAtlas() {
